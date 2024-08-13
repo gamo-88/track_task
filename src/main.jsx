@@ -10,6 +10,7 @@ import Root from './routes/Root.jsx';
 import SignIn from './auth/SignIn.jsx';
 import SignUp from './auth/SignUp.jsx';
 import Erropage from './Erropage.jsx';
+import { Toaster } from 'sonner';
 
 
 
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-       <RouterProvider router={router} />
+      <Toaster position="top-center" richColors  />
+       <RouterProvider  router={router} />
   </StrictMode>,
 )

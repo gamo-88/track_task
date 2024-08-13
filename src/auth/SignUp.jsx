@@ -8,31 +8,55 @@ import { Button, Label, TextInput, Banner } from "flowbite-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/SuperbaseClient';
 import { userStore } from '../../manageStore';
+import { toast, Toaster } from 'sonner';
 
 export default function SignUp() {
     const [name, setName] = useState("")
+    const [nameError, setNameError] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [passwordError, setPasswordError] = useState("")
+
     const navigate = useNavigate()
 
 
     const updateUser = userStore((state) => state.updateUser)
 
+    const validation = ()=>{
+      if(password.trim().length < 6){
+        setPasswordError("At least 6 chars")
+        return 0
+      }
+      if(name.trim().length < 3){
+        setNameError("At least 3 chars")
+        return 0
+      }
+      return 1
+    }
+
 
 
     const handleSignUp = async (e)=>{
       e.preventDefault()
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-              data: {
-                name: name,  // Store the user's display name
-              }
-            }
-          })
-          navigate("/task")
-          updateUser(data.user)
+if (validation()) {
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        name: name,  // Store the user's display name
+      }
+    }
+  })
+if (data) {
+  updateUser(data.user)
+  navigate("/task")
+  toast.success("ACCOUNT, SUCESSFULY CREATED")
+}
+if (error) {
+  toast.error(error.message)
+}
+}
           
     }
 
@@ -70,6 +94,7 @@ export default function SignUp() {
           <Label htmlFor="name" value="Your name" />
         </div>
         <TextInput id="name" value={name} type="text" placeholder="Name ..." required onChange={(e)=>setName(e.target.value)} rightIcon={BadgeOutlinedIcon} className='w-96' sizing="lg" />
+        {nameError && <p className="text-red-400">{nameError}</p>}
       </div>
 
       <div>
@@ -84,6 +109,7 @@ export default function SignUp() {
           <Label htmlFor="password" value="Your password" />
         </div>
         <TextInput id="password" value={password} type="password" placeholder="Password ..." required onChange={(e)=>setPassword(e.target.value)} rightIcon={KeyOutlinedIcon} className='w-96' sizing="lg" />
+          {passwordError && <p className="text-red-400">{passwordError}</p>}
       </div>
 
       <div className="flex items-center gap-2">
