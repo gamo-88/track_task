@@ -166,6 +166,14 @@ const [lowPriorityTask, setLowPriorityTask] = useState(0)
 
 
 const validation = ()=>{
+
+  const currentDate = new Date();
+  const selectedDateTime = new Date(`${deadlineDate}T${deadlineTime}`);
+
+  if (selectedDateTime < currentDate) {
+    alert("Select a date and more after the current date and time.");
+    return 0
+  }
   if (name.length<3) {
     setNameError("At least 3 char required")
     return 0
@@ -207,8 +215,8 @@ const fetchUserTask = async ()=>{
 const updateTaskCompleted = async (taskid, completed)=>{
   const { data, error } = await supabase
   .from('task')
-  .update({ completed })  // Mettre à jour l'attribut `completed`
-  .eq('taskid', taskid);   // Condition : où l'ID de la tâche correspond
+  .update({ completed }) 
+  .eq('taskid', taskid);  
 
 if (error) {
   console.error('Error updating task:', error);
@@ -291,8 +299,8 @@ if (USER) {
 <div className="md-p-24 p-3">
   
  <div className="afterUses flex justify-between items-center mb-5 flex-wrap">
-  <div className="logo"><div className="imageroket flex justify-start"><img src="/images/favicon.ico" alt="" /><span className='font-semibold text-gray-700 text-3xl'>Track-Task</span></div></div>
-<div className="title text-xl font-medium">Welcom Mr/Mrs {USER.user_metadata.name} to App</div>
+  <div className="logo cursor-pointer"><div className="imageroket flex justify-start"><img src="/images/favicon.ico" alt="" /><span className='font-semibold text-gray-700 text-3xl'>Track-Task</span></div></div>
+<div className="title text-xl font-medium">Welcome Mr/Mrs <span className="text-2xl text-white">{USER.user_metadata.name}</span> to Track-task</div>
 <button onClick={(e)=>handleSignOut(e)} className=' text-lg font-medium border rounded-md bg-blue-300 px-2 py-1 ' ><LogoutOutlinedIcon/> Sign Out</button>
 </div> 
 
@@ -423,9 +431,7 @@ if (USER) {
   </p>
   <div className="mt-4 flex justify-between items-center">
     <div className="flex items-center text-sm text-gray-500">
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3a2 2 0 00-2 2v11a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM3 8h14v9H3V8zm4-3v1h6V5H7z" clip-rule="evenodd" />
-      </svg>
+   <CalendarMonthOutlinedIcon/>
       <span>Due: {task?.deadlinedate}, {task?.deadlinehour.slice(0, 5)}</span>
     </div>
     <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">{task?.completed?("completed"):("Running")}</span>
