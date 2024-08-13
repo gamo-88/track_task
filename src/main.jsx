@@ -9,24 +9,29 @@ import {
 import Root from './routes/Root.jsx';
 import SignIn from './auth/SignIn.jsx';
 import SignUp from './auth/SignUp.jsx';
+import Erropage from './Erropage.jsx';
 
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root/>,
-    children:[
-      { path: "task",
-        element: <App/> 
-      },
-      { path: "signIn",
-        element: <SignIn/>
-      },
-      { path: "signUp",
-        element: <SignUp/>
-      },
-    ]
+    element: <SignIn/>,
+    errorElement: <Erropage/>
+  },
+  { path: "/task",
+    errorElement: <Erropage/>,
+    element: <App/> 
+  },
+  
+  { path: "/signIn",
+    errorElement: <Erropage/>,
+    element: <SignIn/>
+  },
+  
+  { path: "signUp",
+    errorElement: <Erropage/>,
+    element: <SignUp/>
   },
 ]);
 

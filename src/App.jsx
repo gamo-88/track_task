@@ -287,8 +287,9 @@ useEffect(() => {
 
 if (USER) {
   return (
-    <div className='h-full bg-green-300 md-p-24 p-3'>
-
+    <div className='min-h-[100vh] flex flex-col justify-between bg-green-300 '>
+<div className="md-p-24 p-3">
+  
  <div className="afterUses flex justify-between items-center mb-5 flex-wrap">
   <div className="logo"><div className="imageroket flex justify-start"><img src="/images/favicon.ico" alt="" /><span className='font-semibold text-gray-700 text-3xl'>Track-Task</span></div></div>
 <div className="title text-xl font-medium">Welcom Mr/Mrs {USER.user_metadata.name} to App</div>
@@ -747,8 +748,16 @@ if (USER) {
     </Sidebar>
         </Drawer.Items>
       </Drawer>
+</div>
 
+      <footer className="bg-gray-800 text-white py-4">
+  <div className="container mx-auto text-center">
 
+    <div className="text-gray-400">
+      © 2024 Gamo. Tract-task.
+    </div>
+  </div>
+</footer>
     </div>
   )
 }else{
