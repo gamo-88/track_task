@@ -1,8 +1,15 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage  } from 'zustand/middleware'
 
-export const userStore = create((set) => ({
-  USER: null,
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
-  updateUser: (newUser) => set({ USER: newUser }),
-}))
+export const userStore = create(
+  persist(
+    (set) => ({
+      USER: null,
+      updateUser: (newUser) => set({ USER: newUser }),
+    }),
+    {
+      name: 'userSession', 
+      storage: createJSONStorage(() => sessionStorage), 
+    },
+  )
+)
