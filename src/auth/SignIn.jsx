@@ -84,7 +84,7 @@ if (data.user) {
           </p>
         </div>
         <div className="flex shrink-0 items-center">
-        <span className="mr-1">Go to</span><Button href="/signUp" >Sign up</Button>
+        <span className="mr-1">Go to</span><Button to="/signUp" >Sign up</Button>
 
         </div>
       </div>

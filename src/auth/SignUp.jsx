@@ -54,7 +54,7 @@ export default function SignUp() {
           </p>
         </div>
         <div className="flex shrink-0 items-center">
-        <span className="mr-1">Go to</span><Button href="/signIn" >Sign In</Button>
+        <span className="mr-1">Go to</span><Button to="/signIn" >Sign In</Button>
 
         </div>
       </div>
