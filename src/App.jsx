@@ -16,6 +16,7 @@ import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
 import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import ArrowUpwardOutlinedIcon from '@mui/icons-material/ArrowUpwardOutlined';
 
 import { Badge } from "flowbite-react";
 import { Button, Banner, Label, Modal } from "flowbite-react";
@@ -336,8 +337,8 @@ if (USER) {
   <div className="main bg-slate-100 w-[80%] max-sm:w-[95%] m-2 p-4 rounded-sm">
 
   <div className="head flex justify-between mb-3">
-    <div className="viewBoard  max-sm:block hidden  text-green-400 text-2xl cursor-pointer" onClick={() => setBoardIsopen(true)}><span className="ico"><QueryStatsOutlinedIcon/></span>My Board</div>
-    <div className="create text-green-400 text-2xl cursor-pointer hover:underline " onClick={() => setOpenModal(true)}><span className="icoCreate"><AddCircleOutlinedIcon/></span>Add(New Task)</div>
+    <div className="  max-sm:block hidden  text-green-400 text-2xl cursor-pointer" onClick={() => setBoardIsopen(true)}><span className="ico"><QueryStatsOutlinedIcon/></span>My Board</div>
+    <div className=" text-green-400 text-2xl cursor-pointer hover:underline " onClick={() => setOpenModal(true)}><span className="icoCreate"><AddCircleOutlinedIcon/></span>Add(New Task)</div>
   </div>
   <div className="inbox text-2xl"><span className="ico text-blue-300"><InventoryOutlinedIcon/></span>InBox</div>
 
@@ -453,7 +454,7 @@ if (USER) {
   )
 }) 
 }
-{tasks.length<=0&&(<p className="text-6xl text-gray-900 dark:text-white"><span className='text-8xl text-gray-600'>0</span>No task yet click on New task to follow up there.</p>) }
+{tasks.length<=0&&(<p className="text-6xl text-gray-900 dark:text-white"><span className='text-8xl text-gray-600'>0.<br/> </span>No task yet, click on <span className='text-green-400'>Add( New task)<ArrowUpwardOutlinedIcon/><ArrowUpwardOutlinedIcon/><ArrowUpwardOutlinedIcon/></span>up there to follow up .</p>) }
   </div>
 
   </div>
