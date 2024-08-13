@@ -21,6 +21,7 @@ import ArrowUpwardOutlinedIcon from '@mui/icons-material/ArrowUpwardOutlined';
 import { Badge } from "flowbite-react";
 import { Button, Banner, Label, Modal } from "flowbite-react";
 import { Tooltip } from "flowbite-react";
+import { toast } from 'sonner';
 
 
 
@@ -28,6 +29,7 @@ import { Tooltip } from "flowbite-react";
 
 export default function App() {
   const USER = userStore((state)=> state.USER)
+  const updateUser = userStore((state)=> state.updateUser)
 
 
 
@@ -37,6 +39,8 @@ const navigate = useNavigate()
 const handleSignOut = async (e)=>{
   e.preventDefault()
 const { error } = await supabase.auth.signOut()
+updateUser(null)
+console.log(USER)
     navigate("/signIn")
 }
 
@@ -44,7 +48,7 @@ const { error } = await supabase.auth.signOut()
 
 const handleSubmit = async (e)=>{
   e.preventDefault()
-  if (validation()) {
+  if (creatTaskvalidation()) {
     const { error } = await supabase
     .from('task')
     .insert({ 
@@ -67,6 +71,7 @@ const handleSubmit = async (e)=>{
            setDeadlineTimeError('')
            setpriority(1)
            setOpenModal(false)
+           toast.info("task created succesfully")
            setDisplay(v=>!v)
 
            }else{
@@ -109,6 +114,7 @@ const handleEdit =async (e)=>{
   console.log(error)
   console.log(currentTaskId)
   setOpenEditModal(false)
+  toast.info("task edited succesfully")
   setDisplay(v=>!v)
 
   
@@ -127,6 +133,7 @@ const handleDelet = async ()=>{
       .delete()
       .eq('taskid', currentdelete)
       setOpenDeletModal(false)
+      toast.info("task deleted succesfully")
       setDisplay(v=>!v)
 }
 
@@ -159,20 +166,20 @@ const handleCloseBoard = () => setBoardIsopen(false);
 
 
 const [totalTask, setTotalTask] = useState(0)
-const [completedTask, setCompletedTask] = useState(0)
+const [completedTask, setCompletedTask] = useState(false)
 const [runningTask, setRunningTask] = useState(0)
 const [highPriorityTask, setHighPriorityTask] = useState(0)
 const [neutralPriorityTask, setNeutralPriorityTask] = useState(0)
 const [lowPriorityTask, setLowPriorityTask] = useState(0)
 
 
-const validation = ()=>{
+const creatTaskvalidation = ()=>{
 
   const currentDate = new Date();
   const selectedDateTime = new Date(`${deadlineDate}T${deadlineTime}`);
 
   if (selectedDateTime < currentDate) {
-    alert("Select a date and more after the current date and time.");
+    toast.error("please choose a date greater than the current date");
     return 0
   }
   if (name.length<3) {
@@ -201,14 +208,17 @@ const fetchUserTask = async ()=>{
   .from('task')
   .select("*")
   .eq('ownerid', USER.id)
+ if (data) {
   setTasks(data)
-  console.log(tasks)
   getTotal()
   getCompletedTask()
   getRunningTask()
   getHighPriorityTask()
   getNeutralPriorityTask()
   getLowPriorityTask()
+ }else{
+  toast.error(error)
+ }
 
 } 
 
@@ -217,7 +227,8 @@ const updateTaskCompleted = async (taskid, completed)=>{
   const { data, error } = await supabase
   .from('task')
   .update({ completed }) 
-  .eq('taskid', taskid);  
+  .eq('taskid', taskid); 
+   
 
 // if (error) {
 //   console.error('Error updating task:', error);
@@ -252,7 +263,7 @@ const openView = (taskId)=>{
  
  const getCompletedTask = ()=>{
   let completedTask = tasks.filter((item)=>item.completed)
-  return setCompletedTask(completedTask.length)
+  return  setCompletedTask(completedTask.length)
  }
  const getRunningTask = ()=>{
   let runningTask = tasks.filter((item)=>!item.completed)
@@ -555,7 +566,7 @@ if (USER) {
       </Modal>
 
 <Modal show={openEditModal} onClose={() => setOpenEditModal(false)} popup>
-        <Modal.Header><span className='text-green-400'>Add a task</span></Modal.Header>
+        <Modal.Header><span className='text-green-400'>Edit task</span></Modal.Header>
         <Modal.Body>
         
           <div className="space-y-6">

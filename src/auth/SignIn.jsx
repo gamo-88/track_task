@@ -53,7 +53,6 @@ export default function SignIn() {
 if (data.user) {
     navigate("/task")
     updateUser(data.user)
-    console.log(data.user)
 }
 
     
