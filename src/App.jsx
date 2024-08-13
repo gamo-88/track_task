@@ -218,16 +218,16 @@ const updateTaskCompleted = async (taskid, completed)=>{
   .update({ completed }) 
   .eq('taskid', taskid);  
 
-if (error) {
-  console.error('Error updating task:', error);
-} else {
-  console.log('Task updated:', data);
-}
+// if (error) {
+//   console.error('Error updating task:', error);
+// } else {
+//   console.log('Task updated:', data);
+// }
 }
 
 const handleOnchangeComplete = async (taskId) =>{
   let task = tasks.filter((item)=>item.taskid === taskId)
-  console.log(task.taskid)
+  // console.log(task.taskid)
   // console.log(task[0])
   // const { error } = await supabase
   // .from('task')
@@ -281,16 +281,7 @@ useEffect(()=>{
 
 fetchUserTask()
 },[display])
-useEffect(() => {
-  getTotal()
-  getCompletedTask()
-  getRunningTask()
-  getHighPriorityTask()
-  getNeutralPriorityTask()
-  getLowPriorityTask()
 
-
-}, [])
 
 
 if (USER) {
@@ -462,6 +453,7 @@ if (USER) {
   )
 }) 
 }
+{tasks.length<=0&&(<p className="text-6xl text-gray-900 dark:text-white"><span className='text-8xl text-gray-600'>0</span>No task yet click on New task to follow up there.</p>) }
   </div>
 
   </div>
