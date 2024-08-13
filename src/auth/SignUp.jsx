@@ -54,7 +54,7 @@ export default function SignUp() {
           </p>
         </div>
         <div className="flex shrink-0 items-center">
-        <span className="mr-1">Go to</span><Button to="/signIn" >Sign In</Button>
+        <span className="mr-1">Go to</span><Link to="/signIn" className='px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75' >Sign In</Link>
 
         </div>
       </div>

@@ -84,7 +84,7 @@ if (data.user) {
           </p>
         </div>
         <div className="flex shrink-0 items-center">
-        <span className="mr-1">Go to</span><Button to="/signUp" >Sign up</Button>
+        <span className="mr-1">Go to</span><Link to="/signUp" className='px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75' >Sign up</Link>
 
         </div>
       </div>
