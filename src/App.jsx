@@ -337,7 +337,7 @@ if (USER) {
 
   <div className="head flex justify-between mb-3">
     <div className="viewBoard  max-sm:block hidden  text-green-400 text-2xl cursor-pointer" onClick={() => setBoardIsopen(true)}><span className="ico"><QueryStatsOutlinedIcon/></span>My Board</div>
-    <div className="create text-green-400 text-2xl cursor-pointer hover:underline " onClick={() => setOpenModal(true)}><span className="icoCreate"><AddCircleOutlinedIcon/></span>New Task</div>
+    <div className="create text-green-400 text-2xl cursor-pointer hover:underline " onClick={() => setOpenModal(true)}><span className="icoCreate"><AddCircleOutlinedIcon/></span>Add(New Task)</div>
   </div>
   <div className="inbox text-2xl"><span className="ico text-blue-300"><InventoryOutlinedIcon/></span>InBox</div>
 
