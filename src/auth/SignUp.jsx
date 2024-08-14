@@ -61,7 +61,7 @@ if (error) {
     }
 
   return (
-    <div className=' h-svh flex flex-col items-center     bg-green-50'>
+    <div className=' h-svh flex flex-col items-center px-3    bg-green-50'>
       <Banner>
       <div className="flex w-[calc(100%-2rem)] flex-col justify-between rounded-lg border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-600 dark:bg-gray-700 md:flex-row lg:max-w-7xl">
         <div className="mb-3 mr-4 flex flex-col items-start md:mb-0 md:flex-row md:items-center">
