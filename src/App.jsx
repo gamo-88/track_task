@@ -467,7 +467,7 @@ if (USER) {
   <div className="main bg-slate-100 w-[80%] max-sm:w-[95%] m-2 p-4 rounded-sm">
 
   <div className="head flex justify-between mb-3">
-    <div className="  max-sm:block hidden  text-green-400 text-2xl cursor-pointer" onClick={() => setBoardIsopen(true)}><span className="ico"><QueryStatsOutlinedIcon/></span>My Board</div>
+    <div className="  max-sm:block hidden  text-green-400 text-2xl cursor-pointer hover:underline" onClick={() => setBoardIsopen(true)}><span className="ico"><QueryStatsOutlinedIcon/></span >My Board</div>
     <div className=" text-green-400 text-2xl cursor-pointer hover:underline " onClick={() => setOpenModal(true)}><span className="icoCreate"><AddCircleOutlinedIcon/></span>Add(New Task)</div>
   </div>
   <div className="inbox text-2xl"><span className="ico text-blue-300"><InventoryOutlinedIcon/></span>InBox</div>
