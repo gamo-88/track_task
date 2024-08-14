@@ -28,153 +28,32 @@ import { toast } from 'sonner';
 
 
 export default function App() {
+
   const USER = userStore((state)=> state.USER)
   const updateUser = userStore((state)=> state.updateUser)
 
-
+  const [tasks, setTasks] = useState([])
+  // to re-executes some function in useeffect
+  let [display, setDisplay] = useState(true)
+ 
 
 
 const navigate = useNavigate()
 
-const handleSignOut = async (e)=>{
-  e.preventDefault()
-const { error } = await supabase.auth.signOut()
-updateUser(null)
-console.log(USER)
-    navigate("/signIn")
+// to sign user out
+const handleSignOut = async ()=>{
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      toast.error(error)
+    }else{
+      updateUser(null)
+      navigate("/signIn")
+    }
 }
 
 
-
-const handleSubmit = async (e)=>{
-  e.preventDefault()
-  if (creatTaskvalidation()) {
-    const { error } = await supabase
-    .from('task')
-    .insert({ 
-      taskname: name,
-      taskdesc: description,
-      deadlinedate: deadlineDate,
-      deadlinehour: deadlineTime,
-      priority: priority,
-      completed: completed,
-      ownerid: USER.id,
-  
-           })
-           if (!error) {
-            setName('')
-           setDescription('')
-           setDescriptionError('')
-           setDeadlineDate('')
-           setDeadlineDateError('')
-           setDeadlineTime('')
-           setDeadlineTimeError('')
-           setpriority(1)
-           setOpenModal(false)
-           toast.info("task created succesfully")
-           setDisplay(v=>!v)
-
-           }else{
-            setInsertError(error)
-           }
-
-  }
-}
-
-const [currentTaskId, setCurrentTaskId] = useState("");
-
-const openSet = (taskId)=>{
-  setOpenEditModal(true)
-  setCurrentTaskId(taskId)
-  console.log(currentTaskId)
-  let task = tasks.filter((item)=>item.taskid === taskId)
-  console.log(task)
-  setCompleted(task[0].completed)
-  setName(task[0].taskname)
-  setDescription(task[0].taskdesc)
-  setDeadlineDate(task[0].deadlinedate)
-  setDeadlineTime(task[0].deadlinehour.slice(0, 5))
-  setpriority(task[0].priority)
-}
-
-const handleEdit =async (e)=>{
-  e.preventDefault()
-
-  const { error } = await supabase
-  .from('task')
-  .update({       taskname: name,
-                  taskdesc: description,
-                  deadlinedate: deadlineDate,
-                  deadlinehour: deadlineTime,
-                  priority: priority,
-                  completed: completed,
-
-   })
-  .eq('taskid', currentTaskId)
-  console.log(error)
-  console.log(currentTaskId)
-  setOpenEditModal(false)
-  toast.info("task edited succesfully")
-  setDisplay(v=>!v)
-
-  
-}
-const [currentdelete, setCurrentdelete] = useState("")
-const openSetDelet =(taskId)=>{
-  setOpenDeletModal(true)
-  setCurrentdelete(taskId)
-}
-
-const handleDelet = async ()=>{
-  console.log(currentdelete)
-
-    const response = await supabase
-      .from('task')
-      .delete()
-      .eq('taskid', currentdelete)
-      setOpenDeletModal(false)
-      toast.info("task deleted succesfully")
-      setDisplay(v=>!v)
-}
-
-
-const [openModal, setOpenModal] = useState(false);
-const [openEditModal, setOpenEditModal] = useState(false);
-const [completed, setCompleted] = useState(false);
-const [name, setName] = useState("");
-const [description, setDescription] = useState("");
-const [deadlineDate, setDeadlineDate] = useState("");
-const [deadlineTime, setDeadlineTime] = useState("");
-const [priority, setpriority] = useState(1);
-
-
-const [insertError, setInsertError] = useState('')
-const [nameError, setNameError] = useState('')
-const [descriptionError, setDescriptionError] = useState('')
-const [deadlineDateError, setDeadlineDateError] = useState('')
-const [deadlineTimeError, setDeadlineTimeError] = useState('')
-const [tasks, setTasks] = useState([]) 
-const [openDeletModal, setOpenDeletModal] = useState(false)
-const [display, setDisplay] = useState(true)
-const [isOpenDrawer, setisOpenDrawer] = useState(false);
-
-const handleCloseDrawer = () => setisOpenDrawer(false);
-
-const [boardIsopen, setBoardIsopen] = useState(false);
-
-const handleCloseBoard = () => setBoardIsopen(false);
-
-
-const [totalTask, setTotalTask] = useState(0)
-const [completedTask, setCompletedTask] = useState(false)
-const [runningTask, setRunningTask] = useState(0)
-const [highPriorityTask, setHighPriorityTask] = useState(0)
-const [neutralPriorityTask, setNeutralPriorityTask] = useState(0)
-const [lowPriorityTask, setLowPriorityTask] = useState(0)
-
-
+// verify and handle validation of data before creating a task
 const creatTaskvalidation = ()=>{
-
   const currentDate = new Date();
   const selectedDateTime = new Date(`${deadlineDate}T${deadlineTime}`);
 
@@ -202,20 +81,165 @@ const creatTaskvalidation = ()=>{
   return 1
 }
 
+// create a new task in superbase database
+const handleSubmit = async (e)=>{
+  e.preventDefault()
+  if (creatTaskvalidation()) {
+    const { error } = await supabase
+    .from('task')
+    .insert({ 
+      taskname: name,
+      taskdesc: description,
+      deadlinedate: deadlineDate,
+      deadlinehour: deadlineTime,
+      priority: priority,
+      completed: completed,
+      ownerid: USER.id,
+  
+           })
+          //  reset value of inputs, and notify user
+           if (!error) {
+            setName('')
+           setDescription('')
+           setDescriptionError('')
+           setDeadlineDate('')
+           setDeadlineDateError('')
+           setDeadlineTime('')
+           setDeadlineTimeError('')
+           setpriority(1)
+           setOpenModal(false)
+           toast.info("task created succesfully")
+           setDisplay(v=>!v)
+
+           }else{
+            toast.error(error)
+           }
+
+  }
+}
+
+// state to trans from openSet() to edition
+const [currentTaskId, setCurrentTaskId] = useState("");
+
+const openSet = (taskId)=>{
+  setOpenEditModal(true)
+  setCurrentTaskId(taskId)
+  // console.log(currentTaskId)
+  let task = tasks.filter((item)=>item.taskid === taskId)
+  // console.log(task)
+  setCompleted(task[0].completed)
+  setName(task[0].taskname)
+  setDescription(task[0].taskdesc)
+  setDeadlineDate(task[0].deadlinedate)
+  setDeadlineTime(task[0].deadlinehour.slice(0, 5))
+  setpriority(task[0].priority)
+}
+
+const handleEdit =async (e)=>{
+  e.preventDefault()
+  const { error } = await supabase
+  .from('task')
+  .update({       taskname: name,
+                  taskdesc: description,
+                  deadlinedate: deadlineDate,
+                  deadlinehour: deadlineTime,
+                  priority: priority,
+                  completed: completed,
+
+          })
+  .eq('taskid', currentTaskId)
+  // console.log(error)
+  // console.log(currentTaskId)
+  setOpenEditModal(false)
+  toast.info("task edited succesfully")
+  setCompleted(false)
+  setName('')
+  setDescription('')
+  setDescriptionError('')
+  setDeadlineDate('')
+  setDeadlineDateError('')
+  setDeadlineTime('')
+  setDeadlineTimeError('')
+  setpriority(1)
+  setDisplay(v=>!v)
+}
+
+// state to trans from openSetDelet() to handleDelet
+const [currentdelete, setCurrentdelete] = useState("")
+
+const openSetDelet =(taskId)=>{
+  setOpenDeletModal(true)
+  setCurrentdelete(taskId)
+}
+
+const handleDelet = async ()=>{
+  // console.log(currentdelete)
+
+    const response = await supabase
+      .from('task')
+      .delete()
+      .eq('taskid', currentdelete)
+      setOpenDeletModal(false)
+      toast.info("Task deleted succesfully")
+      setDisplay(v=>!v)
+}
+
+
+
+const [completed, setCompleted] = useState(false);
+const [name, setName] = useState("");
+const [description, setDescription] = useState("");
+const [deadlineDate, setDeadlineDate] = useState("");
+const [deadlineTime, setDeadlineTime] = useState("");
+const [priority, setpriority] = useState(1);
+
+
+const [insertError, setInsertError] = useState('')
+const [nameError, setNameError] = useState('')
+const [descriptionError, setDescriptionError] = useState('')
+const [deadlineDateError, setDeadlineDateError] = useState('')
+const [deadlineTimeError, setDeadlineTimeError] = useState('')
+// create task modale 
+const [openModal, setOpenModal] = useState(false);
+// edit modale 
+const [openEditModal, setOpenEditModal] = useState(false);
+// delete modale 
+const [openDeletModal, setOpenDeletModal] = useState(false)
+const [isOpenDrawer, setisOpenDrawer] = useState(false);
+
+const handleCloseDrawer = () => setisOpenDrawer(false);
+
+const [boardIsopen, setBoardIsopen] = useState(false);
+
+const handleCloseBoard = () => setBoardIsopen(false);
+
+
+const [totalTask, setTotalTask] = useState(0)
+let [completedTask, setCompletedTask] = useState([])
+let [runningTask, setRunningTask] = useState([])
+let [highPriorityTask, setHighPriorityTask] = useState([])
+let [neutralPriorityTask, setNeutralPriorityTask] = useState([])
+let [lowPriorityTask, setLowPriorityTask] = useState([])
+
+
 
 const fetchUserTask = async ()=>{
+
+
+
+
   const { data, error } = await supabase
   .from('task')
   .select("*")
   .eq('ownerid', USER.id)
  if (data) {
   setTasks(data)
-  getTotal()
-  getCompletedTask()
-  getRunningTask()
-  getHighPriorityTask()
-  getNeutralPriorityTask()
-  getLowPriorityTask()
+  // getTotal()
+  // getCompletedTask()
+  // getRunningTask()
+  // getHighPriorityTask()
+  // getNeutralPriorityTask()
+  // getLowPriorityTask()
  }else{
   toast.error(error)
  }
@@ -249,6 +273,7 @@ const handleOnchangeComplete = async (taskId) =>{
   setDisplay(v=>!v)
 }
 
+// task in view by drawer 
 let [currentviewingTask, setCurrentviewingTask] = useState([])
 const openView = (taskId)=>{
   let task = tasks.filter((item)=>item.taskid === taskId)
@@ -257,41 +282,135 @@ const openView = (taskId)=>{
 
 }
 
- const getTotal = ()=>{
-  return setTotalTask(tasks.length)
- }
+//  const getTotal = ()=>{
+//   return setTotalTask(tasks.length)
+//  }
  
- const getCompletedTask = ()=>{
-  let completedTask = tasks.filter((item)=>item.completed)
-  return  setCompletedTask(completedTask.length)
- }
- const getRunningTask = ()=>{
-  let runningTask = tasks.filter((item)=>!item.completed)
-  return setRunningTask(runningTask.length)
- }
- const getHighPriorityTask = ()=>{
-  let highPriority = tasks.filter((item)=>item.priority == 3)
-  return setHighPriorityTask(highPriority.length)
- }
- const getNeutralPriorityTask = ()=>{
-  let neutralPriority = tasks.filter((item)=>item.priority == 1)
-  return setNeutralPriorityTask(neutralPriority.length)
- }
- const getLowPriorityTask = ()=>{
-  let lowPriority = tasks.filter((item)=>item.priority == 2)
-  return setLowPriorityTask(lowPriority.length)
- }
+//  const getCompletedTask = ()=>{
+//   let completedTask = tasks.filter((item)=>item.completed)
+//   return  setCompletedTask(completedTask.length)
+//  }
 
+// const getRunningTask = ()=>{
+//   let runningTask = tasks.filter((item)=>!item.completed)
+//   return setRunningTask(runningTask.length)
+//  }
+
+
+//  const getHighPriorityTask = ()=>{
+//   let highPriority = tasks.filter((item)=>item.priority == 3)
+//   return setHighPriorityTask(highPriority.length)
+//  }
+
+
+//  const getNeutralPriorityTask = ()=>{
+//   let neutralPriority = tasks.filter((item)=>item.priority == 1)
+//   return setNeutralPriorityTask(neutralPriority.length)
+//  }
+
+
+//  const getLowPriorityTask = ()=>{
+//   let lowPriority = tasks.filter((item)=>item.priority == 2)
+//   return setLowPriorityTask(lowPriority.length)
+//  }
+
+// Board functions
+ const getTotal = async () => {
+  const { data, error } = await supabase
+    .from('task')
+    .select('*')
+    .eq('ownerid', USER.id);
+    if (data) {
+      setTotalTask(data.length)
+    }
+  }
+ const getCompletedTasks = async () => {
+  const { data, error } = await supabase
+    .from('task')
+    .select('*')
+    .eq('completed', true)
+    .eq('ownerid', USER.id);
+    if (data) {
+      setCompletedTask(data.length)
+    }
+  }
+
+
+ const getRunningTask = async () => {
+  const { data, error } = await supabase
+    .from('task')
+    .select('*')
+    .eq('completed', false)
+    .eq('ownerid', USER.id);
+    if (data) {
+      setRunningTask(data.length)
+    }
+  }
+
+
+ const getHighPriorityTask = async () => {
+  const { data, error } = await supabase
+    .from('task')
+    .select('*')
+    .eq('priority', 3)
+    .eq('ownerid', USER.id);
+    if (data) {
+      setHighPriorityTask(data.length)
+    }
+  }
+
+
+ const getNeutralPriorityTask = async () => {
+  const { data, error } = await supabase
+    .from('task')
+    .select('*')
+    .eq('priority', 1)
+    .eq('ownerid', USER.id);
+    if (data) {
+      setNeutralPriorityTask(data.length)
+    }
+  }
+
+
+ const getLowPriorityTask = async () => {
+  const { data, error } = await supabase
+    .from('task')
+    .select('*')
+    .eq('priority', 2)
+    .eq('ownerid', USER.id);
+    if (data) {
+      setLowPriorityTask(data.length)
+    }
+  }
 
 useEffect(()=>{
-  getTotal()
-  getCompletedTask()
-  getRunningTask()
-  getHighPriorityTask()
-  getNeutralPriorityTask()
   getLowPriorityTask()
+  getNeutralPriorityTask()
+  getHighPriorityTask()
+  getRunningTask()
+  getCompletedTasks()
+  getTotal()
+  fetchUserTask()
 
-fetchUserTask()
+
+
+// connecting board functions to acces realtime data display
+const taskChannel = supabase
+.channel('public:task')
+.on('postgres_changes', { event: '*', schema: 'public', table: 'task' }, () => {
+  getLowPriorityTask()
+  getNeutralPriorityTask()
+  getHighPriorityTask()
+  getRunningTask()
+  getCompletedTasks()
+  getTotal()
+  fetchUserTask()
+})
+.subscribe();
+
+return () => {
+taskChannel.unsubscribe();
+};
 },[display])
 
 
@@ -302,9 +421,9 @@ if (USER) {
 <div className="md-p-24 p-3">
   
  <div className="afterUses flex justify-between items-center mb-5 flex-wrap">
-  <div className="logo cursor-pointer"><div className="imageroket flex justify-start"><img src="/images/favicon.ico" alt="" /><span className='font-semibold text-gray-700 text-3xl'>Track-Task</span></div></div>
-<div className="title text-xl font-medium">Welcome Mr/Mrs <span className="text-2xl text-white">{USER.user_metadata.name}</span> to Track-task</div>
-<button onClick={(e)=>handleSignOut(e)} className=' text-lg font-medium border rounded-md bg-blue-300 px-2 py-1 ' ><LogoutOutlinedIcon/> Sign Out</button>
+  <div className="logo cursor-pointer"><div className="imageroket flex justify-start"><img src="/images/favicon.ico" alt="" /><span className='font-semibold text-gray-900 text-3xl'>Track-Task</span></div></div>
+<div className="title text-gray-800 text-xl font-medium">Welcome Mr/Mrs <span className="text-2xl text-black">{USER.user_metadata.name.toUpperCase()}</span> to Track-task</div>
+<button onClick={handleSignOut} className=' text-lg font-medium border rounded-md bg-blue-300 px-2 py-1 ' ><LogoutOutlinedIcon/> Sign Out</button>
 </div> 
 
 <div className="wraper bg-[#fffefe] flex gap-4">
@@ -465,7 +584,14 @@ if (USER) {
   )
 }) 
 }
-{tasks.length<=0&&(<p className="text-6xl text-gray-900 dark:text-white"><span className='text-8xl text-gray-600'>0.<br/> </span>No task yet, click on <span className='text-green-400'>Add( New task)<ArrowUpwardOutlinedIcon/><ArrowUpwardOutlinedIcon/><ArrowUpwardOutlinedIcon/></span>up there to follow up .</p>) }
+{tasks.length<=0&&(<div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg p-4">
+    <p className="text-3xl lg:text-5xl font-semibold text-gray-800">0</p>
+    <p className="text-lg lg:text-4xl text-gray-600">
+        No task yet, click on 
+        <span className="font-semibold text-blue-500 cursor-pointer hover:underline"  onClick={() => setOpenModal(true)}> Add (New task) </span>
+        up there to follow up.
+    </p>
+</div>) }
   </div>
 
   </div>
@@ -764,7 +890,7 @@ if (USER) {
   <div className="container mx-auto text-center">
 
     <div className="text-gray-400">
-      © 2024 Gamo. Tract-task.
+      © 2024 Gamo. Track-task.
     </div>
   </div>
 </footer>
