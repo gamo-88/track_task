@@ -523,7 +523,11 @@ if (USER) {
 
 <div className="bg-gray-50 border-l-4 lg:hidden border-blue-500 p-4 w-full mx-auto my-4">
   <div className="flex justify-between items-center">
-    <h3 className="text-xl font-bold text-gray-800">{task?.taskname}</h3>
+<div className="flex gap-3">
+<input type="checkbox" className='border cursor-pointer' name="status" id={task.taskid} checked={task.completed} onChange={()=>handleOnchangeComplete(task.taskid)} />
+<h3 className="text-xl font-bold text-gray-800"> {task?.taskname} </h3>
+</div>
+
 {
  task?.priority==1 && (
     <span className="text-white bg-green-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{task?.priority}</span>
@@ -556,7 +560,9 @@ if (USER) {
    <CalendarMonthOutlinedIcon/>
       <span>Due: {task?.deadlinedate}, {task?.deadlinehour.slice(0, 5)}</span>
     </div>
-    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">{task?.completed?("completed"):("Running")}</span>
+    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">{task?.completed?("completed"):("Running")}
+
+    </span>
   </div>
 
 
