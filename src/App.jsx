@@ -16,6 +16,8 @@ import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
 import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
+
 import ArrowUpwardOutlinedIcon from '@mui/icons-material/ArrowUpwardOutlined';
 
 import { Badge } from "flowbite-react";
@@ -35,6 +37,53 @@ export default function App() {
   const [tasks, setTasks] = useState([])
   // to re-executes some function in useeffect
   let [display, setDisplay] = useState(true)
+  let [isLoading, setIsLoading] = useState(false)
+  
+const [completed, setCompleted] = useState(false);
+const [name, setName] = useState("");
+const [description, setDescription] = useState("");
+const [deadlineDate, setDeadlineDate] = useState("");
+const [deadlineTime, setDeadlineTime] = useState("");
+const [priority, setpriority] = useState(1);
+
+
+const [insertError, setInsertError] = useState('')
+const [nameError, setNameError] = useState('')
+const [descriptionError, setDescriptionError] = useState('')
+const [deadlineDateError, setDeadlineDateError] = useState('')
+const [deadlineTimeError, setDeadlineTimeError] = useState('')
+// create task modale 
+const [openModal, setOpenModal] = useState(false);
+// edit modale 
+const [openEditModal, setOpenEditModal] = useState(false);
+const handleCloseEditModal = () => {
+  setOpenEditModal(false)
+  // Reset evry input 
+  setName("")
+  setDescription("")
+  setDeadlineDate("")
+  setDeadlineTime("")
+  setpriority("")
+};
+
+
+// delete modale 
+const [openDeletModal, setOpenDeletModal] = useState(false)
+const [isOpenDrawer, setisOpenDrawer] = useState(false);
+
+const handleCloseDrawer = () => setisOpenDrawer(false);
+
+const [boardIsopen, setBoardIsopen] = useState(false);
+
+const handleCloseBoard = () => setBoardIsopen(false);
+
+
+const [totalTask, setTotalTask] = useState(0)
+let [completedTask, setCompletedTask] = useState([])
+let [runningTask, setRunningTask] = useState([])
+let [highPriorityTask, setHighPriorityTask] = useState([])
+let [neutralPriorityTask, setNeutralPriorityTask] = useState([])
+let [lowPriorityTask, setLowPriorityTask] = useState([])
  
 
 
@@ -186,47 +235,13 @@ const handleDelet = async ()=>{
 
 
 
-const [completed, setCompleted] = useState(false);
-const [name, setName] = useState("");
-const [description, setDescription] = useState("");
-const [deadlineDate, setDeadlineDate] = useState("");
-const [deadlineTime, setDeadlineTime] = useState("");
-const [priority, setpriority] = useState(1);
-
-
-const [insertError, setInsertError] = useState('')
-const [nameError, setNameError] = useState('')
-const [descriptionError, setDescriptionError] = useState('')
-const [deadlineDateError, setDeadlineDateError] = useState('')
-const [deadlineTimeError, setDeadlineTimeError] = useState('')
-// create task modale 
-const [openModal, setOpenModal] = useState(false);
-// edit modale 
-const [openEditModal, setOpenEditModal] = useState(false);
-// delete modale 
-const [openDeletModal, setOpenDeletModal] = useState(false)
-const [isOpenDrawer, setisOpenDrawer] = useState(false);
-
-const handleCloseDrawer = () => setisOpenDrawer(false);
-
-const [boardIsopen, setBoardIsopen] = useState(false);
-
-const handleCloseBoard = () => setBoardIsopen(false);
-
-
-const [totalTask, setTotalTask] = useState(0)
-let [completedTask, setCompletedTask] = useState([])
-let [runningTask, setRunningTask] = useState([])
-let [highPriorityTask, setHighPriorityTask] = useState([])
-let [neutralPriorityTask, setNeutralPriorityTask] = useState([])
-let [lowPriorityTask, setLowPriorityTask] = useState([])
 
 
 
 const fetchUserTask = async ()=>{
 
 
-
+setIsLoading(true)
 
   const { data, error } = await supabase
   .from('task')
@@ -234,6 +249,7 @@ const fetchUserTask = async ()=>{
   .eq('ownerid', USER.id)
  if (data) {
   setTasks(data)
+  setIsLoading(false)
   // getTotal()
   // getCompletedTask()
   // getRunningTask()
@@ -242,6 +258,7 @@ const fetchUserTask = async ()=>{
   // getLowPriorityTask()
  }else{
   toast.error(error)
+  setIsLoading(false)
  }
 
 } 
@@ -383,7 +400,10 @@ const openView = (taskId)=>{
     }
   }
 
+
+
 useEffect(()=>{
+
   getLowPriorityTask()
   getNeutralPriorityTask()
   getHighPriorityTask()
@@ -391,8 +411,6 @@ useEffect(()=>{
   getCompletedTasks()
   getTotal()
   fetchUserTask()
-
-
 
 // connecting board functions to acces realtime data display
 const taskChannel = supabase
@@ -412,6 +430,30 @@ return () => {
 taskChannel.unsubscribe();
 };
 },[display])
+// checke task and generate a notification uppon
+// const checkTaskDeadlines = (tasks) => {
+//   const now = new Date();
+
+//   tasks.forEach((task) => {
+//     const deadline = new Date(task.deadlinedate + 'T' + task.deadlinehour -3600000);
+
+//     if (deadline <= now && !task.completed && !task.isReminding) {
+//       toast.info(`Task "${task.name}" is going in overtime !`);
+//       task.isReminding = true; 
+//     }
+//   });
+// };
+
+// Apply the function to reminde
+
+// useEffect(() => {
+//   const interval = setInterval(() => {
+//     checkTaskDeadlines(tasks)
+//   }, 60000)
+
+//   return () => clearInterval(interval)
+// }, [tasks])
+
 
 
 
@@ -423,7 +465,7 @@ if (USER) {
  <div className="afterUses flex justify-between items-center mb-5 flex-wrap">
   <div className="logo cursor-pointer"><div className="imageroket flex justify-start"><img src="/images/favicon.ico" alt="" /><span className='font-semibold text-gray-900 text-3xl'>Track-Task</span></div></div>
 <div className="title text-gray-800 text-xl font-medium">Welcome Mr/Mrs <span className="text-2xl text-black">{USER.user_metadata.name.toUpperCase()}</span> to Track-task</div>
-<button onClick={handleSignOut} className=' text-lg font-medium border rounded-md bg-blue-300 px-2 py-1 ' ><LogoutOutlinedIcon/> Sign Out</button>
+<button onClick={handleSignOut} className=' text-lg font-medium border rounded-md bg-blue-300 px-2 py-1'><LogoutOutlinedIcon/> Sign Out</button>
 </div> 
 
 <div className="wraper bg-[#fffefe] flex gap-4">
@@ -466,7 +508,19 @@ if (USER) {
   </div>
   <div className="main bg-slate-100 w-[80%] max-sm:w-[95%] m-2 p-4 rounded-sm">
 
-  <div className="head flex justify-between mb-3">
+{
+  isLoading?(
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex space-x-2 animate-spin  delay-300">
+        <div className="w-4 h-4 bg-blue-600 rounded-full "></div>
+        <div className="w-4 h-4 bg-green-600 rounded-full "></div>
+        <div className="w-4 h-4 bg-blue-600 rounded-full "></div>
+      </div>
+      <p className="text-gray-700 mt-6 animate-bounce">Loading data...</p>
+    </div>
+  ):(
+    <div className="">
+    <div className="head flex justify-between mb-3">
     <div className="  max-sm:block hidden  text-green-400 text-2xl cursor-pointer hover:underline" onClick={() => setBoardIsopen(true)}><span className="ico"><QueryStatsOutlinedIcon/></span >My Board</div>
     <div className=" text-green-400 text-2xl cursor-pointer hover:underline " onClick={() => setOpenModal(true)}><span className="icoCreate"><AddCircleOutlinedIcon/></span>Add(New Task)</div>
   </div>
@@ -482,6 +536,7 @@ if (USER) {
 <div className="checkName flex gap-3 md:items-center">
   <div className="check"> <input type="checkbox" name="status" id={task.taskid} checked={task.completed} onChange={()=>handleOnchangeComplete(task.taskid)} /> </div>
   <div className="nameDesc">
+    {task.isReminding && <div className="w-fit border-lg bg-red-600 animate-pulse"><span className="text-white"><NotificationsActiveOutlinedIcon/></span></div>}
     <div className="name text-xl font-semibold">{task.taskname}</div>
     <div className="desc text-gray-400">{task.taskdesc.substring(0, 5)}{task.taskdesc.length>5&&("...")}</div>
   </div>
@@ -503,9 +558,9 @@ if (USER) {
     <>
    {
     <div className="">
-       {task.priority==3&&<Badge color="failure" className='text-center'>High</Badge>}
-       {task.priority==1&&<Badge color="success" className='text-center'>Neutral</Badge>}
-      {task.priority==2&&<Badge color="info" className='text-center'>Low</Badge>}
+       {task.priority==3 && <Badge color="failure" className='text-center'>High</Badge>}
+       {task.priority==1 && <Badge color="success" className='text-center'>Neutral</Badge>}
+      {task.priority==2 && <Badge color="info" className='text-center'>Low</Badge>}
     </div>
    }
     </>
@@ -530,21 +585,21 @@ if (USER) {
 
 {
  task?.priority==1 && (
-    <span className="text-white bg-green-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{task?.priority}</span>
+    <span className="text-white bg-green-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"><span className="text-[10px]">Neutral</span></span>
 
   )
 }
 
 {
  task?.priority==2 && (
-    <span className="text-white bg-blue-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{task?.priority}</span>
+    <span className="text-white bg-blue-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"><span className="text-[13px]">Low</span></span>
 
   )
 }
 
 {
  task?.priority==3 && (
-    <span className="text-white bg-red-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{task?.priority}</span>
+    <span className="text-white bg-red-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"><span className="text-[12px]">High</span></span>
 
   )
 }
@@ -598,7 +653,9 @@ if (USER) {
         up there to follow up.
     </p>
 </div>) }
-  </div>
+  </div></div>
+  )
+}
 
   </div>
   
@@ -696,8 +753,8 @@ if (USER) {
         </Modal.Body>
 
       </Modal>
-
-<Modal show={openEditModal} onClose={() => setOpenEditModal(false)} popup>
+{/* MODALE TO EDIT A TASK */}
+<Modal show={openEditModal} onClose={handleCloseEditModal} popup>
         <Modal.Header><span className='text-green-400'>Edit task</span></Modal.Header>
         <Modal.Body>
         
@@ -777,7 +834,7 @@ if (USER) {
             </div>
             <div className="grid gap-6 mt-6 md:grid-cols-2 ">
             <Button type='submit'>Update</Button>
-                      <Button color="gray" onClick={() => setOpenEditModal(false)}>
+                      <Button color="gray" onClick={handleCloseEditModal}>
                         Decline
                       </Button>
             </div>
@@ -807,6 +864,8 @@ if (USER) {
         </Modal.Body> 
       </Modal>
 
+      {/* INFOS DRAWER TO SHOW currentviewingTask */}
+
       <Drawer open={isOpenDrawer} onClose={handleCloseDrawer} position="right">
         <Drawer.Header title="Task info" />
         <Drawer.Items>
@@ -816,21 +875,21 @@ if (USER) {
     <h3 className="text-xl font-bold text-gray-800">{currentviewingTask[0]?.taskname}</h3>
 {
  currentviewingTask[0]?.priority==1 && (
-    <span className="text-white bg-green-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{currentviewingTask[0]?.priority}</span>
+    <span className="text-white bg-green-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"><span className="text-6px">Neutral</span></span>
 
   )
 }
 
 {
  currentviewingTask[0]?.priority==2 && (
-    <span className="text-white bg-blue-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{currentviewingTask[0]?.priority}</span>
+    <span className="text-white bg-blue-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"><span className="text-6px">Low</span></span>
 
   )
 }
 
 {
  currentviewingTask[0]?.priority==3 && (
-    <span className="text-white bg-red-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{currentviewingTask[0]?.priority}</span>
+    <span className="text-white bg-red-600 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"><span className="text-6px">High</span></span>
 
   )
 }
